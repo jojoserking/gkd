@@ -51,5 +51,10 @@
     "room_full": "Der Raum ist voll (höchstens 8 Spieler).",
     "too_late": "Zu spät, die Zeit ist abgelaufen.",
     "already_answered": "Du hast schon geantwortet."
-  }
+  },
+  "dailyDesc": "10 Fragen. Jeden Tag neu. Für alle gleich.",
+  "duelDesc": "Erstelle einen Raum und spiel live gegen deine Freunde.",
+  "statQuestions": "Fragen",
+  "statCategories": "Kategorien",
+  "statLanguages": "Sprachen"
 }

@@ -5,8 +5,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Dictionary } from "@/lib/dictionaries";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 import { ranking, SECONDS_PER_QUESTION, type RoomStatus } from "@/lib/duel/logic";
+import AnswerOption, { type OptionState } from "@/components/AnswerOption";
 import {
-  buttonPrimary, errorText, inputStyle, loadCredentials, postJson, saveCredentials, type Credentials,
+  buttonPrimary, cardStyle, errorText, inputStyle, loadCredentials, postJson, saveCredentials, type Credentials,
 } from "./shared";
 
 type Room = {
@@ -167,9 +168,9 @@ export default function DuelRoom({ lang, code, t }: Props) {
     return (
       <div className="flex flex-col gap-6">
         <Header lang={lang} title={t.lobby} />
-        <div className="rounded-xl border-2 border-current/10 p-4 text-center">
+        <div className={`${cardStyle} text-center`}>
           <p className="text-sm opacity-70">{t.inviteFriends}</p>
-          <p className="my-2 text-4xl font-bold tracking-[0.3em]">{code}</p>
+          <p className="my-3 bg-gradient-to-br from-indigo-600 to-fuchsia-500 bg-clip-text font-mono text-5xl font-black tracking-[0.3em] text-transparent">{code}</p>
           <button onClick={copyLink} className="text-sm underline opacity-80">
             {copied ? t.copied : t.copyLink}
           </button>
@@ -180,7 +181,7 @@ export default function DuelRoom({ lang, code, t }: Props) {
           </h2>
           <ul className="flex flex-col gap-1">
             {players.map((p) => (
-              <li key={p.id} className="rounded-lg bg-current/5 px-3 py-2">
+              <li key={p.id} className="rounded-xl bg-card px-4 py-3 ring-1 ring-indigo-500/10">
                 {p.nickname}
                 {p.id === room.host_player_id && <span className="opacity-60"> · {t.host}</span>}
                 {p.id === creds.playerId && <span className="opacity-60"> ({t.you})</span>}
@@ -235,32 +236,32 @@ export default function DuelRoom({ lang, code, t }: Props) {
         </span>
         <span>{room.status === "question" ? `${secondsLeft} ${t.secondsLeft}` : t.timeUp}</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-current/10">
+      <div className="h-2.5 w-full rounded-full bg-indigo-500/10">
         <div
-          className="h-2 rounded-full bg-indigo-600 transition-all duration-300"
+          className={`h-2.5 rounded-full transition-all duration-300 ${secondsLeft <= 5 ? "bg-red-500" : "bg-gradient-to-r from-indigo-600 to-fuchsia-500"}`}
           style={{ width: `${room.status === "question" ? (secondsLeft / SECONDS_PER_QUESTION) * 100 : 0}%` }}
         />
       </div>
-      <h1 className="text-2xl font-semibold leading-snug">{showQuestion.question.text}</h1>
+      <h1 key={showQuestion.index} className="text-2xl font-bold leading-snug animate-pop">{showQuestion.question.text}</h1>
       <div className="flex flex-col gap-3">
         {showQuestion.question.options.map((option, i) => {
-          let style = "border-current/20 hover:border-indigo-500";
+          let state: OptionState = "idle";
           if (revealed) {
-            if (i === showQuestion.correctIndex) style = "border-green-600 bg-green-600/15";
-            else if (i === myChoice) style = "border-red-600 bg-red-600/15";
-            else style = "border-current/10 opacity-60";
+            if (i === showQuestion.correctIndex) state = "correct";
+            else if (i === myChoice) state = "wrong";
+            else state = "dimmed";
           } else if (myChoice !== undefined) {
-            style = i === myChoice ? "border-indigo-600 bg-indigo-600/15" : "border-current/10 opacity-60";
+            state = i === myChoice ? "chosen" : "dimmed";
           }
           return (
-            <button
-              key={i}
-              onClick={() => answer(i)}
+            <AnswerOption
+              key={`${showQuestion.index}-${i}`}
+              index={i}
+              text={option}
+              state={state}
               disabled={myChoice !== undefined || room.status !== "question" || secondsLeft === 0}
-              className={`rounded-xl border-2 px-5 py-4 text-left text-lg transition ${style}`}
-            >
-              {option}
-            </button>
+              onClick={() => answer(i)}
+            />
           );
         })}
       </div>
@@ -295,16 +296,8 @@ export default function DuelRoom({ lang, code, t }: Props) {
   );
 }
 
-function Header({ lang, title }: { lang: string; title: string }) {
-  return (
-    <div className="flex items-center justify-between">
-      <Link href={`/${lang}`} className="text-sm opacity-70">
-        ← GKD
-      </Link>
-      <h1 className="text-xl font-bold">{title}</h1>
-      <span />
-    </div>
-  );
+function Header({ title }: { lang: string; title: string }) {
+  return <h1 className="text-center text-3xl font-black">{title}</h1>;
 }
 
 function Message({ text, lang, t }: { text: string; lang: string; t: Dictionary }) {
@@ -332,10 +325,10 @@ function Standings({
       {standings.map((s, i) => (
         <li
           key={s.playerId}
-          className={`flex justify-between rounded-lg px-3 py-2 ${s.playerId === me ? "bg-indigo-600/15" : "bg-current/5"}`}
+          className={`flex justify-between rounded-xl px-4 py-3 ring-1 ${s.playerId === me ? "bg-indigo-600/15 ring-indigo-600/40" : "bg-card ring-indigo-500/10"}`}
         >
           <span>
-            {i + 1}. {s.nickname}
+            {["🥇", "🥈", "🥉"][i] ?? `${i + 1}.`} {s.nickname}
             {s.playerId === me && <span className="opacity-60"> ({t.you})</span>}
           </span>
           <span className="font-semibold">
@@ -384,7 +377,7 @@ function JoinForm({
   return (
     <div className="flex flex-col gap-4">
       <Header lang={lang} title={t.duelTitle} />
-      <p className="text-center text-4xl font-bold tracking-[0.3em]">{code}</p>
+      <p className="text-center font-mono text-5xl font-black tracking-[0.3em] text-indigo-600">{code}</p>
       <input
         className={inputStyle}
         placeholder={t.nickname}

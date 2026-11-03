@@ -1,4 +1,5 @@
 import "server-only";
+import { moreQuestions } from "./questionsMore.ts";
 
 // Beispiel-Fragenpool. Die echten Fragen liegen in Supabase (Tabelle "questions").
 // Diese Liste dient als Ersatz, solange Supabase nicht eingerichtet ist, und als Quelle für supabase/setup.sql.
@@ -20,7 +21,7 @@ export type Question = {
   answer: 0 | 1 | 2 | 3;
 };
 
-export const questions: Question[] = [
+const baseQuestions: Question[] = [
   {
     id: "geo-001",
     category: "geography",
@@ -232,3 +233,6 @@ export const questions: Question[] = [
     answer: 1,
   },
 ];
+
+// Alle Fragen: die ersten 30 von oben plus die weiteren aus questionsMore.ts
+export const questions: Question[] = [...baseQuestions, ...moreQuestions];

@@ -39,6 +39,7 @@ export function errorText(t: Dictionary, code: string): string {
 }
 
 export const buttonPrimary =
-  "rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-500 disabled:opacity-50";
+  "rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 px-6 py-3 text-center font-semibold text-white shadow-md shadow-indigo-600/30 transition hover:brightness-110 active:scale-[0.98] disabled:opacity-50";
 export const inputStyle =
-  "rounded-xl border-2 border-current/20 bg-transparent px-4 py-3 text-lg focus:border-indigo-500 outline-none";
+  "rounded-2xl border-2 border-indigo-500/20 bg-card px-4 py-3 text-lg outline-none transition focus:border-indigo-500";
+export const cardStyle = "rounded-3xl bg-card p-6 shadow-lg ring-1 ring-indigo-500/15 backdrop-blur";

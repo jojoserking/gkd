@@ -51,5 +51,10 @@
     "room_full": "The room is full (8 players max).",
     "too_late": "Too late, time is up.",
     "already_answered": "You already answered."
-  }
+  },
+  "dailyDesc": "10 questions. New every day. The same for everyone.",
+  "duelDesc": "Create a room and play live against your friends.",
+  "statQuestions": "questions",
+  "statCategories": "categories",
+  "statLanguages": "languages"
 }
