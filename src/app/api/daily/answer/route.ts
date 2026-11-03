@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "questionId and choice required" }, { status: 400 });
   }
 
-  const question = dailyQuestions(todayKey()).find((q) => q.id === questionId);
+  const question = (await dailyQuestions(todayKey())).find((q) => q.id === questionId);
   if (!question) {
     return Response.json({ error: "not in today's quiz" }, { status: 404 });
   }

@@ -1,6 +1,7 @@
 import "server-only";
 
-// Beispiel-Fragenpool. Später kommen die Fragen aus der Datenbank (Supabase).
+// Beispiel-Fragenpool. Die echten Fragen liegen in Supabase (Tabelle "questions").
+// Diese Liste dient als Ersatz, solange Supabase nicht eingerichtet ist, und als Quelle für supabase/setup.sql.
 // "answer" ist die Position der richtigen Antwort (0 bis 3) und wird nie an den Browser geschickt.
 
 export type Category =

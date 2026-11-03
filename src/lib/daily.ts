@@ -1,5 +1,6 @@
 import "server-only";
-import { questions, type Question } from "./questions";
+import type { Question } from "./questions";
+import { getQuestionPool } from "./questionStore";
 import type { Locale } from "./dictionaries";
 
 export const QUESTIONS_PER_DAY = 10;
@@ -22,9 +23,9 @@ function seededRandom(seed: string) {
   };
 }
 
-export function dailyQuestions(date: string): Question[] {
+export async function dailyQuestions(date: string): Promise<Question[]> {
   const rand = seededRandom(date);
-  const pool = [...questions];
+  const pool = [...(await getQuestionPool())];
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -35,8 +36,8 @@ export function dailyQuestions(date: string): Question[] {
 // Was der Browser sehen darf: Frage und Antworten, aber nicht die Lösung.
 export type PublicQuestion = { id: string; category: string; text: string; options: string[] };
 
-export function publicDailyQuestions(date: string, lang: Locale): PublicQuestion[] {
-  return dailyQuestions(date).map((q) => ({
+export async function publicDailyQuestions(date: string, lang: Locale): Promise<PublicQuestion[]> {
+  return (await dailyQuestions(date)).map((q) => ({
     id: q.id,
     category: q.category,
     text: q[lang].text,

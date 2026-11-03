@@ -27,9 +27,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         >
           {t.playDaily}
         </Link>
-        <span className="rounded-xl border border-current/20 px-6 py-4 text-lg font-semibold opacity-50">
-          {t.liveDuel} ({t.comingSoon})
-        </span>
+        <Link
+          href={`/${lang}/duel`}
+          className="rounded-xl border-2 border-indigo-600 px-6 py-4 text-lg font-semibold hover:bg-indigo-600/10"
+        >
+          {t.liveDuel}
+        </Link>
       </div>
     </main>
   );
