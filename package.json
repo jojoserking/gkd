@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --test src/lib/duel/logic.test.ts",
+    "setup:sql": "node --conditions=react-server scripts/make-setup-sql.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "next": "16.4.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",

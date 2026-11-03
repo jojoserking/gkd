@@ -10,7 +10,7 @@ async function TodaysQuiz({ lang }: { lang: Locale }) {
   await connection();
   const t = await getDictionary(lang);
   const date = todayKey();
-  return <DailyQuiz lang={lang} date={date} questions={publicDailyQuestions(date, lang)} t={t} />;
+  return <DailyQuiz lang={lang} date={date} questions={await publicDailyQuestions(date, lang)} t={t} />;
 }
 
 export default async function DailyPage({ params }: PageProps<"/[lang]/daily">) {
