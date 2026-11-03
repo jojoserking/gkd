@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GKD · General Knowledge Duel
 
-## Getting Started
+Allgemeinwissen-Quiz: jeden Tag 10 neue Fragen, bald auch live gegen Freunde. Auf Deutsch und Englisch.
 
-First, run the development server:
+## Stand
+
+- Tagesquiz mit 10 Fragen pro Tag, für alle gleich (wechselt um Mitternacht deutscher Zeit)
+- Antworten werden auf dem Server geprüft, die Lösung kommt nie in den Browser
+- Ergebnis teilen (z. B. per WhatsApp), Ergebnis bleibt nach dem Neuladen erhalten
+- Deutsch (`/de`) und Englisch (`/en`), die Sprache wird aus dem Browser erkannt
+- 30 Beispielfragen in `src/lib/questions.ts`
+
+## Lokal starten
+
+Du brauchst [Node.js](https://nodejs.org) (Version 20 oder neuer).
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Dann im Browser http://localhost:3000 öffnen.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Wichtige Dateien
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Datei | Was drin ist |
+| --- | --- |
+| `src/lib/questions.ts` | Der Fragenpool (später in Supabase) |
+| `src/lib/daily.ts` | Wählt jeden Tag 10 Fragen aus |
+| `src/app/api/daily/answer/route.ts` | Prüft Antworten auf dem Server |
+| `src/components/DailyQuiz.tsx` | Das Quiz, das man im Browser sieht |
+| `src/dictionaries/de.json`, `en.json` | Alle Texte der Seite pro Sprache |
 
-## Learn More
+## Nächste Schritte
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Online stellen mit Vercel
+2. Fragen in die Datenbank (Supabase) verschieben und auf 500 ausbauen
+3. Live-Duell mit Supabase Realtime
