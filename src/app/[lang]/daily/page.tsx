@@ -18,7 +18,7 @@ export default async function DailyPage({ params }: PageProps<"/[lang]/daily">) 
   if (!hasLocale(lang)) notFound();
 
   return (
-    <main className="w-full max-w-md">
+    <main className="w-full max-w-xl">
       <Suspense fallback={<p className="text-center opacity-60">…</p>}>
         <TodaysQuiz lang={lang} />
       </Suspense>

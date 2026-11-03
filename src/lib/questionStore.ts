@@ -11,6 +11,7 @@ type Row = {
   text_en: string;
   options_en: string[];
   answer: number;
+  active: boolean;
 };
 
 function fromRow(r: Row): Question {
@@ -23,25 +24,33 @@ function fromRow(r: Row): Question {
   };
 }
 
-async function loadFromSupabase(): Promise<Question[]> {
+async function loadFromSupabase(): Promise<Row[]> {
   "use cache";
   cacheLife("minutes");
   const { data, error } = await supabaseAdmin()
     .from("questions")
-    .select("id, category, text_de, options_de, text_en, options_en, answer")
-    .eq("active", true)
+    .select("id, category, text_de, options_de, text_en, options_en, answer, active")
     .order("id");
   if (error) throw new Error(`Fragen konnten nicht geladen werden: ${error.message}`);
-  return (data as Row[]).map(fromRow);
+  return data as Row[];
 }
 
-// Alle Fragen. Kommen aus Supabase, sobald es eingerichtet ist und Fragen enthält.
-// Bis dahin (oder bei einem Fehler) nehmen wir die Beispielfragen aus questions.ts,
+// Fragen aus Supabase plus alle Fragen aus dem Code, die dort noch fehlen.
+// So sind neue Fragen sofort im Spiel, ohne dass jemand SQL ausführen muss.
+// Eine Frage, die in Supabase auf active = false steht, bleibt ausgeschaltet.
+function merge(rows: Row[]): Question[] {
+  const known = new Set(rows.map((r) => r.id));
+  const fromDb = rows.filter((r) => r.active).map(fromRow);
+  return [...fromDb, ...localQuestions.filter((q) => !known.has(q.id))];
+}
+
+// Alle Fragen. Kommen aus Supabase (plus neue aus dem Code), sobald es eingerichtet ist.
+// Bis dahin (oder bei einem Fehler) nehmen wir nur die Fragen aus questions.ts,
 // damit die Website nie kaputtgeht.
 export async function getQuestionPool(): Promise<Question[]> {
   if (!isSupabaseConfigured()) return localQuestions;
   try {
-    const pool = await loadFromSupabase();
+    const pool = merge(await loadFromSupabase());
     return pool.length > 0 ? pool : localQuestions;
   } catch (e) {
     console.error(e);

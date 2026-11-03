@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { PublicQuestion } from "@/lib/daily";
 import type { Dictionary } from "@/lib/dictionaries";
+import AnswerOption, { type OptionState } from "./AnswerOption";
+import { buttonPrimary, cardStyle } from "./duel/shared";
 
 type Props = { lang: string; date: string; questions: PublicQuestion[]; t: Dictionary };
 type Answer = { choice: number; correctIndex: number; correct: boolean };
@@ -80,9 +82,9 @@ export default function DailyQuiz({ lang, date, questions, t }: Props) {
 
   if (finished) {
     return (
-      <div className="flex flex-col items-center gap-6 text-center">
+      <div className={`${cardStyle} flex flex-col items-center gap-6 text-center animate-pop`}>
         <h1 className="text-2xl font-bold">{t.resultTitle}</h1>
-        <p className="text-6xl font-bold">
+        <p className="bg-gradient-to-br from-indigo-600 to-fuchsia-500 bg-clip-text text-7xl font-black text-transparent">
           {score}/{questions.length}
         </p>
         <p className="text-2xl tracking-widest">
@@ -90,10 +92,7 @@ export default function DailyQuiz({ lang, date, questions, t }: Props) {
             <span key={i}>{a.correct ? "🟩" : "🟥"}</span>
           ))}
         </p>
-        <button
-          onClick={share}
-          className="rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-500"
-        >
+        <button onClick={share} className={buttonPrimary}>
           {copied ? t.copied : t.share}
         </button>
         <p className="opacity-70">{t.comeBack}</p>
@@ -106,36 +105,36 @@ export default function DailyQuiz({ lang, date, questions, t }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between text-sm opacity-70">
-        <Link href={`/${lang}`}>← GKD</Link>
-        <span>
+      <div className="flex items-center justify-between text-sm font-semibold">
+        <span className="rounded-full bg-indigo-600/10 px-3 py-1 text-indigo-600 dark:text-indigo-300">{t.dailyTitle}</span>
+        <span className="opacity-70">
           {t.question} {index + 1} {t.of} {questions.length}
         </span>
       </div>
-      <div className="h-2 w-full rounded-full bg-current/10">
+      <div className="h-2.5 w-full rounded-full bg-indigo-500/10">
         <div
-          className="h-2 rounded-full bg-indigo-600 transition-all"
+          className="h-2.5 rounded-full bg-gradient-to-r from-indigo-600 to-fuchsia-500 transition-all"
           style={{ width: `${((index + (current ? 1 : 0)) / questions.length) * 100}%` }}
         />
       </div>
-      <h1 className="text-2xl font-semibold leading-snug">{question.text}</h1>
+      <h1 key={index} className="text-2xl font-bold leading-snug animate-pop">{question.text}</h1>
       <div className="flex flex-col gap-3">
         {question.options.map((option, i) => {
-          let style = "border-current/20 hover:border-indigo-500";
+          let state: OptionState = "idle";
           if (current) {
-            if (i === current.correctIndex) style = "border-green-600 bg-green-600/15";
-            else if (i === current.choice) style = "border-red-600 bg-red-600/15";
-            else style = "border-current/10 opacity-60";
+            if (i === current.correctIndex) state = "correct";
+            else if (i === current.choice) state = "wrong";
+            else state = "dimmed";
           }
           return (
-            <button
-              key={i}
-              onClick={() => choose(i)}
+            <AnswerOption
+              key={`${index}-${i}`}
+              index={i}
+              text={option}
+              state={state}
               disabled={!!current || busy}
-              className={`rounded-xl border-2 px-5 py-4 text-left text-lg transition ${style}`}
-            >
-              {option}
-            </button>
+              onClick={() => choose(i)}
+            />
           );
         })}
       </div>
@@ -145,10 +144,7 @@ export default function DailyQuiz({ lang, date, questions, t }: Props) {
           <p className={`font-semibold ${current.correct ? "text-green-600" : "text-red-600"}`}>
             {current.correct ? t.correct : t.wrong}
           </p>
-          <button
-            onClick={next}
-            className="rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white hover:bg-indigo-500"
-          >
+          <button onClick={next} className={buttonPrimary}>
             {index + 1 < questions.length ? t.next : t.showResult}
           </button>
         </div>
